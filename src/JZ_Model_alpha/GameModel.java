@@ -22,6 +22,7 @@ public class GameModel extends Observable {
     private String path;
     private int punteggio;
     private boolean isShop;
+    private String f_path;
 
     private Collection<Level> livelli = new ArrayList<>();
     private Level currentLevel;
@@ -58,6 +59,7 @@ public class GameModel extends Observable {
             player.resetItems();
             path=null;
             path = "JZ_Saves/" + f + ".txt";
+            f_path=f;
             File file = new File(path);
             try(BufferedReader reader = new BufferedReader(new FileReader(file))){
                 String riga = reader.readLine();
@@ -560,7 +562,8 @@ public class GameModel extends Observable {
 
     public void endGame(){
         try {
-            caricaSave(path);
+
+            caricaSave(f_path);
             player.muori();
             saveGame();
         } catch (IOException e) {
