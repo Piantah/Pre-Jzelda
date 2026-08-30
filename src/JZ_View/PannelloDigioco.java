@@ -86,8 +86,8 @@ public class PannelloDigioco extends JPanel implements Observer {
 
         //skin 1
         v.add("Player_Front_JZ");
-        v.add("Player_Front_ATK_JZ");
-        v.add("Player_Front_Atk_Fucile_JZ");
+        v.add("Player_Front_Atk_JZ");
+        v.add("Player_Front_ATK_Fucile_JZ");
         v.add("Player_Front_Move_Alpha_JZ");
         v.add("Player_Front_Move_Beta_JZ");
 
