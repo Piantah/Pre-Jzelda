@@ -577,7 +577,7 @@ public class PannelloDigioco extends JPanel implements Observer {
                             case 0 -> g.drawImage(immagini.get("Player_Front_JZ"),p.getxCord() * Tile_Size, (p.getyCord() +1)* Tile_Size, Tile_Size, Tile_Size,null);
                             case 1 -> g.drawImage(immagini.get("Player_Front_Move_Alpha_JZ"),p.getxCord() * Tile_Size, (p.getyCord() +1)* Tile_Size, Tile_Size, Tile_Size,null);
                             case 2 -> g.drawImage(immagini.get("Player_Front_Move_Beta_JZ"),p.getxCord() * Tile_Size, (p.getyCord() +1)* Tile_Size, Tile_Size, Tile_Size,null);
-                            case 3 -> g.drawImage(immagini.get("Player_Front_Atk_Fucile_JZ"),p.getxCord() * Tile_Size, (p.getyCord() +1)* Tile_Size, Tile_Size, Tile_Size,null);
+                            case 3 -> g.drawImage(immagini.get("Player_Front_ATK_Fucile_JZ"),p.getxCord() * Tile_Size, (p.getyCord() +1)* Tile_Size, Tile_Size, Tile_Size,null);
                             case 4 -> g.drawImage(immagini.get("Player_Front_Atk_JZ"),p.getxCord() * Tile_Size, (p.getyCord() +1)* Tile_Size, Tile_Size, Tile_Size,null);
                         }
                     }
@@ -619,7 +619,7 @@ public class PannelloDigioco extends JPanel implements Observer {
                             case 0 -> g.drawImage(immagini.get("Player_1_Front_JZ"),p.getxCord() * Tile_Size, (p.getyCord() +1)* Tile_Size, Tile_Size, Tile_Size,null);
                             case 1 -> g.drawImage(immagini.get("Player_1_Front_Move_Alpha_JZ"),p.getxCord() * Tile_Size, (p.getyCord() +1)* Tile_Size, Tile_Size, Tile_Size,null);
                             case 2 -> g.drawImage(immagini.get("Player_1_Front_Move_Beta_JZ"),p.getxCord() * Tile_Size, (p.getyCord() +1)* Tile_Size, Tile_Size, Tile_Size,null);
-                            case 3 -> g.drawImage(immagini.get("Player_1_Front_Atk_Fucile_JZ"),p.getxCord() * Tile_Size, (p.getyCord() +1)* Tile_Size, Tile_Size, Tile_Size,null);
+                            case 3 -> g.drawImage(immagini.get("Player_1_Front_ATK_Fucile_JZ"),p.getxCord() * Tile_Size, (p.getyCord() +1)* Tile_Size, Tile_Size, Tile_Size,null);
                             case 4 -> g.drawImage(immagini.get("Player_1_Front_Atk_JZ"),p.getxCord() * Tile_Size, (p.getyCord() +1)* Tile_Size, Tile_Size, Tile_Size,null);
                         }
                     }

@@ -227,14 +227,7 @@ public class GameModel extends Observable {
         this.livelli.add(new Level(8, "livello otto", otto,"JZ_Levels/levelEight.txt"));
         this.livelli.add(new Level(9, "Negozio", shop,"JZ_Levels/shop.txt"));
 
-//        this.livelli.add(new Livello_Due(2,"livello due",due));
-//        this.livelli.add(new Livello_Tre(3,"livello due",tre));
-//        this.livelli.add(new Livello_Quattro(4,"livello quattro",quattro));
-//        this.livelli.add(new Livello_Cinque(5,"Livello cinque",cinque));
-//        this.livelli.add(new Livello_Sei(6,"Livello sei",sei));
-//        this.livelli.add(new Livello_Sette(7,"Livello sette",sette));
-//        this.livelli.add(new Livello_Otto(8,"Livello Otto",otto));
-//        this.livelli.add(new Negozio(9,"negozio",shop));
+
     }
     public void changeLevel(int id){
         int tmp = -10;
@@ -407,6 +400,11 @@ public class GameModel extends Observable {
                 }
                 aggiungiItem(i);
                 riduciSoldi(c);
+                try {
+                    saveGame();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
                 return true;
             }
         }
@@ -577,11 +575,6 @@ public class GameModel extends Observable {
         player.ritenta();
     }
 
-    //notifica Observer
-//    private void notifica(PayloadTypes tipo, Object o){
-//        setChanged();
-//        notifyObservers(new Payload(tipo,o));
-//    }
     private void notifica(){
         setChanged();
         notifyObservers();
