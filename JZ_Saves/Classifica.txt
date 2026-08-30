@@ -1,0 +1,6 @@
+PoggiBonsi:885
+panlo:95
+Carlo:60
+Dave:1325
+Inserisci il tuo nome Avventuriero!:160
+Nonna:190

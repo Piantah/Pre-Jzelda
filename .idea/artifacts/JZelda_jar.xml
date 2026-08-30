@@ -1,0 +1,10 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="JZelda:jar">
+    <output-path>$USER_HOME$/OneDrive/Desktop</output-path>
+    <root id="archive" name="JZelda.jar">
+      <element id="module-output" name="JZelda" />
+      <element id="dir-copy" path="$PROJECT_DIR$/JZ_Levels" />
+      <element id="dir-copy" path="$PROJECT_DIR$/JZ_Saves" />
+    </root>
+  </artifact>
+</component>

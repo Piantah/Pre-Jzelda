@@ -1,0 +1,12 @@
+Empty:false
+Name:PoggiBonsi
+P_X:7
+Skin:0
+P_Y:5
+Xp:290
+Morti:0
+Tentativi:1
+Soldi:305
+Level_Id:9
+Item:Spada,Fucile,
+Hp:5

@@ -1,0 +1,11 @@
+Empty:true
+Name:""
+P_X:0
+P_Y:0
+Soldi:0
+Hp:6
+Morti:0
+Tentativi:1
+Item:Spada,Fucile
+Xp:0
+Level_Id:1
