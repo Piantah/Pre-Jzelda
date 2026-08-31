@@ -17,12 +17,15 @@ public class PannelloMenuPrincipale extends JPanel{
         super();
         setLayout(null);
         setBackground(Color.GREEN);
+
         gioca.setBounds(100, 100, 150, 50);
         classifica.setBounds(100, 300, 150, 50);
         chiudi.setBounds(100, 500, 150, 50);
+
         add(gioca);
         add(classifica);
         add(chiudi);
+
         setVisible(true);
 
         gioca.setFocusable(false);

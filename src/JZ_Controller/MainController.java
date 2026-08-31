@@ -1,6 +1,6 @@
 package JZ_Controller;
 
-import JZ_Model_alpha.GameModel;
+import JZ_Model.GameModel;
 import JZ_View.AudioManager;
 import JZ_View.View;
 
@@ -13,22 +13,20 @@ import java.util.ArrayList;
 public class MainController implements KeyListener {
 
 
-        private boolean isshop;
         private boolean paused;
         private View frame;
         private GameModel modello;
-        private AudioManager audio;
+        private final AudioManager audio;
 
-
-        Timer bullets = new Timer(200, bullet -> modello.moveBullets());
-        Timer t = new Timer(1000, e->{
+        Timer proiettili = new Timer(100, bullet -> modello.muoviProiettili());
+        Timer loopNemici = new Timer(1200, e->{
         modello.muoviNemici();
-        bullets.start();
+        proiettili.start();
         if(modello.isGameOver()) {
             frame.apriGameOver();
-            modello.endGame();
-            Timer t1 = (Timer) e.getSource();
-            t1.stop();
+            modello.partitaFinita();
+            Timer fine = (Timer) e.getSource();
+            fine.stop();
         }
         });
 
@@ -43,25 +41,16 @@ public class MainController implements KeyListener {
         frame.setKeylistener(this);
         audio=AudioManager.getInstance();
         modello.addObserver(frame.getP());
-        assignButtons();
+        assegnaBottoni();
+        //comandi per il fullscreen
         GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
         GraphicsDevice device = env.getDefaultScreenDevice();
         device.setFullScreenWindow(frame);
-        //frame.setPreferredSize(new Dimension((modello.getCurrentLevel().getWidth()+1)*48, (modello.getCurrentLevel().getLength()+1)*48));
-        modello.triggerFirstUpdate();
-        Timer x = new Timer(50, e -> {
-                frame.repaint();
-        });
-
-        //x.start();
+        }
 
 
 
-    }
-
-
-
-    private void assignButtons(){
+    private void assegnaBottoni(){
 
         this.frame.getPausa().addChiudiListener(new ActionListener() {
             @Override
@@ -72,7 +61,7 @@ public class MainController implements KeyListener {
         this.frame.getPausa().addRiprendiListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                restart();
+                riparti();
             }
         });
         this.frame.getPausa().addSalvaListener(new ActionListener() {
@@ -80,7 +69,7 @@ public class MainController implements KeyListener {
             public void actionPerformed(ActionEvent e) {
                 System.out.println("Sono salvo");
                 try {
-                    modello.saveGame();
+                    modello.salvaPartita();
                     audio.play("/JZ_Assets/savepoint.wav");
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
@@ -116,7 +105,7 @@ public class MainController implements KeyListener {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    resetSave("JZ_Saves/" +"save_uno" + ".txt");
+                    resetSalvataggio("JZ_Saves/" +"save_uno" + ".txt");
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
                 }
@@ -126,7 +115,7 @@ public class MainController implements KeyListener {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    resetSave("JZ_Saves/" +"save_due" + ".txt");
+                    resetSalvataggio("JZ_Saves/" +"save_due" + ".txt");
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
                 }
@@ -136,7 +125,7 @@ public class MainController implements KeyListener {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    resetSave("JZ_Saves/" +"save_tre" + ".txt");
+                    resetSalvataggio("JZ_Saves/" +"save_tre" + ".txt");
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
                 }
@@ -147,10 +136,10 @@ public class MainController implements KeyListener {
             public void actionPerformed(ActionEvent e) {
                 try {
                     System.out.println("save uno");
-                    modello.caricaSave("save_uno");
-                    if(checkSave("save_uno")){
+                    modello.caricaSalvataggio("save_uno");
+                    if(controllaSalvataggio("save_uno")){
                         frame.apriGioco();
-                        start();
+                        inizia();
                     }
                     else{frame.apriSettaggioNome();}
                 }
@@ -160,10 +149,10 @@ public class MainController implements KeyListener {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    modello.caricaSave("save_due");
-                    if(checkSave("save_due")){
+                    modello.caricaSalvataggio("save_due");
+                    if(controllaSalvataggio("save_due")){
                         frame.apriGioco();
-                        start();
+                        inizia();
                     }
                     else{frame.apriSettaggioNome();}
                 }
@@ -173,10 +162,10 @@ public class MainController implements KeyListener {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    modello.caricaSave("save_tre");
-                    if(checkSave("save_tre")){
+                    modello.caricaSalvataggio("save_tre");
+                    if(controllaSalvataggio("save_tre")){
                         frame.apriGioco();
-                        start();
+                        inizia();
                     }
                     else{frame.apriSettaggioNome();}
                 }
@@ -197,7 +186,7 @@ public class MainController implements KeyListener {
                 }
                 modello.getPlayer().setNome(s);
                 frame.apriGioco();
-                start();
+                inizia();
             }
         });
         this.frame.getSettagioNome().addSkinBaseListener(new ActionListener() {
@@ -221,9 +210,9 @@ public class MainController implements KeyListener {
         this.frame.getGameOver().addContinuaListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                modello.playAgain();
+                modello.giocaAncora();
                 frame.apriGioco();
-                restart();
+                riparti();
             }
         });
         this.frame.getClassifica().addChiudiListener(new ActionListener() {
@@ -235,10 +224,11 @@ public class MainController implements KeyListener {
 
 
 
+
     }
 
 
-    private boolean checkSave(String s) throws IOException {
+    private boolean controllaSalvataggio(String s) throws IOException {
         File path = new File("JZ_Saves/" + s + ".txt");
         try (BufferedReader reader = new BufferedReader(new FileReader(path))) {
                 String riga = reader.readLine();
@@ -254,25 +244,26 @@ public class MainController implements KeyListener {
     }
 
 
-    public void start(){
+
+    public void inizia(){
         paused=false;
-        t.start();
+        loopNemici.start();
 
     }
-    public void pause(){
+    public void pausa(){
         frame.apriMenuPausa();
         paused=true;
-            t.stop();
-            bullets.stop();
+            loopNemici.stop();
+            proiettili.stop();
 
     }
-    public void restart(){
+    public void riparti(){
         frame.chiudiMenuPausa();
         paused=false;
-            t.restart();
-            bullets.restart();
+            loopNemici.restart();
+            proiettili.restart();
     }
-    private void resetSave(String s) throws IOException {
+    private void resetSalvataggio(String s) throws IOException {
         File path= new File(s);
             ArrayList<String> text = new ArrayList<>();
             text.add("Empty:true");
@@ -306,26 +297,26 @@ public class MainController implements KeyListener {
     public void keyPressed(KeyEvent e) {
         if(paused)return;
         int tasto = e.getKeyCode();
-        if(tasto == KeyEvent.VK_ESCAPE){pause();}
+        if(tasto == KeyEvent.VK_ESCAPE){pausa();}
         if (tasto == KeyEvent.VK_E){ if(modello.usaItem("Spada"))audio.play("/JZ_Assets/sword.wav");}
         if (tasto == KeyEvent.VK_R){ if(modello.usaItem("Fucile"))audio.play("/JZ_Assets/fucile.wav");}
-        if (tasto == KeyEvent.VK_T){ if(modello.usaItem("Staff"))audio.play("/JZ_Assets/stafft.wav");}
+        if (tasto == KeyEvent.VK_T){ if(modello.usaItem("Staffa"))audio.play("/JZ_Assets/stafft.wav");}
         if (tasto == KeyEvent.VK_UP) {if(modello.muoviPlayerSu()==1)audio.play("/JZ_Assets/heal.wav");}
         if (tasto == KeyEvent.VK_DOWN ) { if(modello.muoviPlayerGiu()==1)audio.play("/JZ_Assets/heal.wav"); }
         if (tasto == KeyEvent.VK_LEFT ) {  if(modello.muoviPlayerSinistra()==1)audio.play("/JZ_Assets/heal.wav");}
         if (tasto == KeyEvent.VK_RIGHT) { if(modello.muoviPlayerDestra()==1)audio.play("/JZ_Assets/heal.wav");}
 
         if(tasto == KeyEvent.VK_1){
-            if(modello.isShop()) if(modello.acquistaItem("Fucile"))audio.play("/JZ_Assets/shop_sound_1.wav");
+            if(modello.isNegozio()) if(modello.acquistaItem("Fucile"))audio.play("/JZ_Assets/shop_sound_1.wav");
         }
         if(tasto == KeyEvent.VK_2){
-            if(modello.isShop()) if(modello.acquistaItem("Staff"))audio.play("/JZ_Assets/shop_sound_2.wav");
+            if(modello.isNegozio()) if(modello.acquistaItem("Staffa"))audio.play("/JZ_Assets/shop_sound_2.wav");
         }
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
-        modello.getPlayer().resetMove();
+        modello.getPlayer().resetMossa();
     }
 
 }

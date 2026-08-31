@@ -1,16 +1,16 @@
 package JZ_View;
 
-import JZ_Model_alpha.Entities.*;
-import JZ_Model_alpha.Entities.Bullets.EnemyShot;
-import JZ_Model_alpha.Entities.Bullets.PlayerShot;
-import JZ_Model_alpha.Entities.Enemies.*;
-import JZ_Model_alpha.Entities.OtherEntities.*;
-import JZ_Model_alpha.GameModel;
-import JZ_Model_alpha.Items.Fucile;
-import JZ_Model_alpha.Items.Item;
-import JZ_Model_alpha.Items.Spada;
-import JZ_Model_alpha.Items.Staff;
-import JZ_Model_alpha.Levels.Punto;
+import JZ_Model.Entities.*;
+import JZ_Model.Entities.Proiettili.ProiettileNemico;
+import JZ_Model.Entities.Proiettili.ProiettileGiocatore;
+import JZ_Model.Entities.Nemici.*;
+import JZ_Model.Entities.OtherEntities.*;
+import JZ_Model.GameModel;
+import JZ_Model.Items.Fucile;
+import JZ_Model.Items.Item;
+import JZ_Model.Items.Spada;
+import JZ_Model.Items.Staffa;
+import JZ_Model.Levels.Punto;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -203,8 +203,8 @@ public class PannelloDigioco extends JPanel implements Observer {
 
     public void settaggio(){
         setBackground(Color.GRAY);
-        map_lenght=modello.getCurrentLevel().getLength();
-        map_width=modello.getCurrentLevel().getWidth();
+        map_lenght=modello.getLivello().getLunghezza();
+        map_width=modello.getLivello().getAltezza();
         setSize((Tile_Size*map_width)*2,Tile_Size*(map_lenght+3));
         setVisible(true);
     }
@@ -213,7 +213,7 @@ public class PannelloDigioco extends JPanel implements Observer {
     private void creaInterfacciaInterazione(Graphics g){
         int xIn = Tile_Size+(Tile_Size*map_width);
         int xFin=((Tile_Size*map_width)*2)-xIn-Tile_Size;
-        if(modello.getCurrentLevel().getId()==9){
+        if(modello.getLivello().getId()==9){
             g.setColor(Color.RED);
             g.fillRect(xIn,Tile_Size,xFin,Tile_Size*map_lenght);
             g.setColor(Color.getHSBColor(270,39,130));
@@ -226,14 +226,14 @@ public class PannelloDigioco extends JPanel implements Observer {
 //            bottoni.add(new Punto((xHalf+((xHalf-xIn)/2)-Tile_Size),yHalf+(yHalf/2)));
 //            bottoni.add(new Punto(((xHalf-xIn)/2)+xIn,yHalf+(yHalf/2)));
             Mercante m = null;
-            for(Entity e: modello.getCurrentLevel().getEntita()) if(e instanceof Mercante) m=(Mercante)e;
+            for(Entita e: modello.getLivello().getEntita()) if(e instanceof Mercante) m=(Mercante)e;
             if(m!=null){
                 int i=1;
                 g.setColor(Color.getHSBColor(270,39,76));
                 int xCalc = xHalf + ((xHalf - xIn) / 2) - Tile_Size;
                 g.fillRect(xCalc,yHalf+(yHalf/2),Tile_Size,Tile_Size);
                 g.fillRect(((xHalf-xIn)/2)+xIn,yHalf+(yHalf/2),Tile_Size,Tile_Size);
-                for(Item item: m.getSTockedItems()){
+                for(Item item: m.getOggettiDisponibili()){
                     g.setFont(mioFont);
                     g.setColor(Color.WHITE);
 
@@ -247,7 +247,7 @@ public class PannelloDigioco extends JPanel implements Observer {
                             g.drawImage(immagini.get("Fucile_JZ"), xCalc, yHalf + (yHalf / 2), Tile_Size, Tile_Size, null);
 
                         }
-                        if(item instanceof Staff) {
+                        if(item instanceof Staffa) {
                             g.drawString("Tasto 2", xCalc, yHalf + (yHalf / 2)-Tile_Size/2-12);
 
                             g.drawImage(immagini.get("Staff_JZ"), xCalc, yHalf + (yHalf / 2), Tile_Size, Tile_Size, null);
@@ -261,7 +261,7 @@ public class PannelloDigioco extends JPanel implements Observer {
                             g.drawString("Tasto 1", ((xHalf-xIn)/2)+xIn, yHalf + (yHalf / 2)-Tile_Size/2-12);
                             g.drawImage(immagini.get("Fucile_JZ"), ((xHalf-xIn)/2)+xIn, yHalf + (yHalf / 2), Tile_Size, Tile_Size, null);
                         }
-                        if(item instanceof Staff) {
+                        if(item instanceof Staffa) {
                             g.drawString("Tasto 2", ((xHalf-xIn)/2)+xIn, yHalf + (yHalf / 2)-Tile_Size/2-12);
                             g.drawImage(immagini.get("Staff_JZ"), ((xHalf-xIn)/2)+xIn, yHalf + (yHalf / 2), Tile_Size, Tile_Size, null);
                         }
@@ -291,7 +291,7 @@ public class PannelloDigioco extends JPanel implements Observer {
 
     private void creaTabellone(Graphics g) throws IOException {
         if(modello!=null) {
-            switch (modello.getCurrentLevel().getId()){
+            switch (modello.getLivello().getId()){
                 case 1, 3, 4, 6 ->creaTabelloneAux("grassTileJZelda",g);
                 case 2, 7 ->creaTabelloneAux("RockTile_JZ",g);
                 case 5,8->creaTabelloneAux("Vulcanic_Tile_JZ",g);
@@ -363,10 +363,10 @@ public class PannelloDigioco extends JPanel implements Observer {
 
 
 
-        for(Item i : modello.getPlayer().getItems()){
+        for(Item i : modello.getPlayer().getOggetti()){
             if(i instanceof Spada)g.drawImage(immagini.get("Spada_JZ"),5*Tile_Size,0, Tile_Size, Tile_Size,null);
             if(i instanceof Fucile)g.drawImage(immagini.get("Fucile_JZ"),6*Tile_Size,0, Tile_Size, Tile_Size,null);
-            if(i instanceof Staff)g.drawImage(immagini.get("Staff_JZ"),7*Tile_Size,0, Tile_Size, Tile_Size,null);
+            if(i instanceof Staffa)g.drawImage(immagini.get("Staff_JZ"),7*Tile_Size,0, Tile_Size, Tile_Size,null);
 
         }
         g.setFont(mioFont);
@@ -407,76 +407,76 @@ public class PannelloDigioco extends JPanel implements Observer {
 
 
     private void disegnaEntità(Graphics g){
-        for(Entity e : modello.getCurrentLevel().getEntita()){
-            if(e instanceof HuskAttack){
+        for(Entita e : modello.getLivello().getEntita()){
+            if(e instanceof HuskAttacco){
                 g.drawImage(immagini.get("HuskAttack_JZ"),e.getxCord() * Tile_Size, (e.getyCord()+1) * Tile_Size, Tile_Size, Tile_Size,null);
             }
             else if( e instanceof Husk){
                 switch(e.getDirezione()) {
-                    case Facing.DOWN -> {
-                        switch (e.getMove()) {
+                    case Direzione.GIU -> {
+                        switch (e.getMossa()) {
                             case 1 -> g.drawImage(immagini.get("Husk_Front_Move_Alpha_JZ"), e.getxCord() * Tile_Size, (e.getyCord() + 1) * Tile_Size, Tile_Size, Tile_Size, null);
                             case 2 -> g.drawImage(immagini.get("Husk_Front_Move_Beta_JZ"), e.getxCord() * Tile_Size, (e.getyCord() + 1) * Tile_Size, Tile_Size, Tile_Size, null);
                             case 3 -> g.drawImage(immagini.get("Husk_Front_ATK_JZ"), e.getxCord() * Tile_Size, (e.getyCord() + 1) * Tile_Size, Tile_Size, Tile_Size, null);
                         }
                     }
-                    case Facing.LEFT -> {
-                        switch (e.getMove()) {
+                    case Direzione.SINISTRA -> {
+                        switch (e.getMossa()) {
                             case 1 -> g.drawImage(immagini.get("Husk_Left_Move_Alpha_JZ"), e.getxCord() * Tile_Size, (e.getyCord() + 1) * Tile_Size, Tile_Size, Tile_Size, null);
                             case 2 -> g.drawImage(immagini.get("Husk_Left_Move_Beta_JZ"), e.getxCord() * Tile_Size, (e.getyCord() + 1) * Tile_Size, Tile_Size, Tile_Size, null);
                             case 3 -> g.drawImage(immagini.get("Husk_Left_ATK_JZ"), e.getxCord() * Tile_Size, (e.getyCord() + 1) * Tile_Size, Tile_Size, Tile_Size, null);
                         }
                     }
-                    case Facing.RIGHT -> {
-                        switch (e.getMove()) {
+                    case Direzione.DESTRA -> {
+                        switch (e.getMossa()) {
                             case 1 -> g.drawImage(immagini.get("Husk_Right_Move_Alpha_JZ"), e.getxCord() * Tile_Size, (e.getyCord() + 1) * Tile_Size, Tile_Size, Tile_Size, null);
                             case 2 -> g.drawImage(immagini.get("Husk_Right_Move_Beta_JZ"), e.getxCord() * Tile_Size, (e.getyCord() + 1) * Tile_Size, Tile_Size, Tile_Size, null);
                             case 3 -> g.drawImage(immagini.get("Husk_Right_ATK_JZ"), e.getxCord() * Tile_Size, (e.getyCord() + 1) * Tile_Size, Tile_Size, Tile_Size, null);
                         }
                     }
-                    case Facing.UP -> {
-                        switch (e.getMove()) {
+                    case Direzione.SU -> {
+                        switch (e.getMossa()) {
                             case 1 -> g.drawImage(immagini.get("Husk_Up_Move_Alpha_JZ"), e.getxCord() * Tile_Size, (e.getyCord() + 1) * Tile_Size, Tile_Size, Tile_Size, null);
                             case 2 -> g.drawImage(immagini.get("Husk_Up_Move_Beta_JZ"), e.getxCord() * Tile_Size, (e.getyCord() + 1) * Tile_Size, Tile_Size, Tile_Size, null);
                             case 3 -> g.drawImage(immagini.get("Husk_Up_ATK_JZ"), e.getxCord() * Tile_Size, (e.getyCord() + 1) * Tile_Size, Tile_Size, Tile_Size, null);
                         }
                     }
-                    case Facing.NONE -> {
+                    case Direzione.NESSUNA -> {
                         g.drawImage(immagini.get("Husk_Front_Move_Alpha_JZ"), e.getxCord() * Tile_Size, (e.getyCord() + 1) * Tile_Size, Tile_Size, Tile_Size, null);
                     }
                 }
             }
             else if( e instanceof Mago){
                 switch(e.getDirezione()) {
-                    case Facing.DOWN -> {
-                        switch (e.getMove()) {
+                    case Direzione.GIU -> {
+                        switch (e.getMossa()) {
                             case 1 -> g.drawImage(immagini.get("Mago_Front_Move_Alpha_JZ"), e.getxCord() * Tile_Size, (e.getyCord() + 1) * Tile_Size, Tile_Size, Tile_Size, null);
                             case 2 -> g.drawImage(immagini.get("Mago_Front_Move_Beta_JZ"), e.getxCord() * Tile_Size, (e.getyCord() + 1) * Tile_Size, Tile_Size, Tile_Size, null);
                             case 3 -> g.drawImage(immagini.get("Mago_Front_ATK_JZ"), e.getxCord() * Tile_Size, (e.getyCord() + 1) * Tile_Size, Tile_Size, Tile_Size, null);
                         }
                     }
-                    case Facing.LEFT -> {
-                        switch (e.getMove()) {
+                    case Direzione.SINISTRA -> {
+                        switch (e.getMossa()) {
                             case 1 -> g.drawImage(immagini.get("Mago_Left_Move_Alpha_JZ"), e.getxCord() * Tile_Size, (e.getyCord() + 1) * Tile_Size, Tile_Size, Tile_Size, null);
                             case 2 -> g.drawImage(immagini.get("Mago_Left_Move_Beta_JZ"), e.getxCord() * Tile_Size, (e.getyCord() + 1) * Tile_Size, Tile_Size, Tile_Size, null);
                             case 3 -> g.drawImage(immagini.get("Mago_Left_ATK_JZ"), e.getxCord() * Tile_Size, (e.getyCord() + 1) * Tile_Size, Tile_Size, Tile_Size, null);
                         }
                     }
-                    case Facing.RIGHT -> {
-                        switch (e.getMove()) {
+                    case Direzione.DESTRA -> {
+                        switch (e.getMossa()) {
                             case 1 -> g.drawImage(immagini.get("Mago_Right_Move_Alpha_JZ"), e.getxCord() * Tile_Size, (e.getyCord() + 1) * Tile_Size, Tile_Size, Tile_Size, null);
                             case 2 -> g.drawImage(immagini.get("Mago_Right_Move_Beta_JZ"), e.getxCord() * Tile_Size, (e.getyCord() + 1) * Tile_Size, Tile_Size, Tile_Size, null);
                             case 3 -> g.drawImage(immagini.get("Mago_Right_ATK_JZ"), e.getxCord() * Tile_Size, (e.getyCord() + 1) * Tile_Size, Tile_Size, Tile_Size, null);
                         }
                     }
-                    case Facing.UP -> {
-                        switch (e.getMove()) {
+                    case Direzione.SU -> {
+                        switch (e.getMossa()) {
                             case 1 -> g.drawImage(immagini.get("Mago_Up_Move_Alpha_JZ"), e.getxCord() * Tile_Size, (e.getyCord() + 1) * Tile_Size, Tile_Size, Tile_Size, null);
                             case 2 -> g.drawImage(immagini.get("Mago_Up_Move_Beta_JZ"), e.getxCord() * Tile_Size, (e.getyCord() + 1) * Tile_Size, Tile_Size, Tile_Size, null);
                             case 3 -> g.drawImage(immagini.get("Mago_Up_ATK_JZ"), e.getxCord() * Tile_Size, (e.getyCord() + 1) * Tile_Size, Tile_Size, Tile_Size, null);
                         }
                     }
-                    case Facing.NONE -> {
+                    case Direzione.NESSUNA -> {
                         g.drawImage(immagini.get("Mago_Front_Move_Alpha_JZ"), e.getxCord() * Tile_Size, (e.getyCord() + 1) * Tile_Size, Tile_Size, Tile_Size, null);
                     }
                 }
@@ -496,7 +496,7 @@ public class PannelloDigioco extends JPanel implements Observer {
 
     }
     private void disegnaElementiStatici(Graphics g){
-        for(Entity e : modello.getCurrentLevel().getEntita()){
+        for(Entita e : modello.getLivello().getEntita()){
             if(e instanceof Ostacolo){
                 switch (((Ostacolo)  e).getId_tipo_ostacolo()){
                     case 1:
@@ -541,21 +541,21 @@ public class PannelloDigioco extends JPanel implements Observer {
 
         }
     private void disegnaEntitàTemp(Graphics g){
-        for(Entity e : modello.getTemp()){
-            if(e instanceof HuskAttack){
+        for(Entita e : modello.getTemp()){
+            if(e instanceof HuskAttacco){
                 g.drawImage(immagini.get("HuskAttack_JZ"),e.getxCord() * Tile_Size, (e.getyCord()+1) * Tile_Size, Tile_Size, Tile_Size,null);
             }
         }
 
     }
     private void disegnaBulletTemp(Graphics g){
-        for(Entity e : modello.getTempBull()){
-            if (e instanceof PlayerShot) {
+        for(Entita e : modello.getProiettiliTemp()){
+            if (e instanceof ProiettileGiocatore) {
                 g.drawImage(immagini.get("PlayerTestBullet_JZelda"),e.getxCord() * Tile_Size, (e.getyCord() +1)* Tile_Size, Tile_Size, Tile_Size,null);
             }
 
-            if (e instanceof EnemyShot){
-                if(((EnemyShot) e).getId()==1){
+            if (e instanceof ProiettileNemico){
+                if(((ProiettileNemico) e).getId()==1){
                     g.drawImage(immagini.get("Palla_Di_Fuoco_JZ"),e.getxCord() * Tile_Size, (e.getyCord() +1)* Tile_Size, Tile_Size, Tile_Size,null);
 
                 }
@@ -572,8 +572,8 @@ public class PannelloDigioco extends JPanel implements Observer {
             Player p =modello.getPlayer();
             switch (p.getSkin()){
                 case 0->{switch(p.getDirezione()){
-                    case Facing.DOWN -> {
-                        switch (p.getMove()){
+                    case Direzione.GIU -> {
+                        switch (p.getMossa()){
                             case 0 -> g.drawImage(immagini.get("Player_Front_JZ"),p.getxCord() * Tile_Size, (p.getyCord() +1)* Tile_Size, Tile_Size, Tile_Size,null);
                             case 1 -> g.drawImage(immagini.get("Player_Front_Move_Alpha_JZ"),p.getxCord() * Tile_Size, (p.getyCord() +1)* Tile_Size, Tile_Size, Tile_Size,null);
                             case 2 -> g.drawImage(immagini.get("Player_Front_Move_Beta_JZ"),p.getxCord() * Tile_Size, (p.getyCord() +1)* Tile_Size, Tile_Size, Tile_Size,null);
@@ -581,8 +581,8 @@ public class PannelloDigioco extends JPanel implements Observer {
                             case 4 -> g.drawImage(immagini.get("Player_Front_Atk_JZ"),p.getxCord() * Tile_Size, (p.getyCord() +1)* Tile_Size, Tile_Size, Tile_Size,null);
                         }
                     }
-                    case Facing.LEFT -> {
-                        switch (p.getMove()){
+                    case Direzione.SINISTRA -> {
+                        switch (p.getMossa()){
                             case 0 -> g.drawImage(immagini.get("Player_Left_JZ"),p.getxCord() * Tile_Size, (p.getyCord() +1)* Tile_Size, Tile_Size, Tile_Size,null);
                             case 1 -> g.drawImage(immagini.get("Player_Left_Move_Alpha_JZ"),p.getxCord() * Tile_Size, (p.getyCord() +1)* Tile_Size, Tile_Size, Tile_Size,null);
                             case 2 -> g.drawImage(immagini.get("Player_Left_Move_Beta_JZ"),p.getxCord() * Tile_Size, (p.getyCord() +1)* Tile_Size, Tile_Size, Tile_Size,null);
@@ -590,8 +590,8 @@ public class PannelloDigioco extends JPanel implements Observer {
                             case 4 -> g.drawImage(immagini.get("Player_Left_ATK_JZ"),p.getxCord() * Tile_Size, (p.getyCord() +1)* Tile_Size, Tile_Size, Tile_Size,null);
                         }
                     }
-                    case Facing.RIGHT -> {
-                        switch (p.getMove()){
+                    case Direzione.DESTRA -> {
+                        switch (p.getMossa()){
                             case 0 -> g.drawImage(immagini.get("Player_Right_JZ"),p.getxCord() * Tile_Size, (p.getyCord() +1)* Tile_Size, Tile_Size, Tile_Size,null);
                             case 1 -> g.drawImage(immagini.get("Player_Right_Move_Alpha_JZ"),p.getxCord() * Tile_Size, (p.getyCord() +1)* Tile_Size, Tile_Size, Tile_Size,null);
                             case 2 -> g.drawImage(immagini.get("Player_Right_Move_Beta_JZ"),p.getxCord() * Tile_Size, (p.getyCord() +1)* Tile_Size, Tile_Size, Tile_Size,null);
@@ -599,8 +599,8 @@ public class PannelloDigioco extends JPanel implements Observer {
                             case 4 -> g.drawImage(immagini.get("Player_Right_ATK_JZ"),p.getxCord() * Tile_Size, (p.getyCord() +1)* Tile_Size, Tile_Size, Tile_Size,null);
                         }
                     }
-                    case Facing.UP -> {
-                        switch (p.getMove()){
+                    case Direzione.SU -> {
+                        switch (p.getMossa()){
                             case 0 -> g.drawImage(immagini.get("Player_Up_JZ"),p.getxCord() * Tile_Size, (p.getyCord() +1)* Tile_Size, Tile_Size, Tile_Size,null);
                             case 1 -> g.drawImage(immagini.get("Player_Up_Move_Alpha_JZ"),p.getxCord() * Tile_Size, (p.getyCord() +1)* Tile_Size, Tile_Size, Tile_Size,null);
                             case 2 -> g.drawImage(immagini.get("Player_Up_Move_Beta_JZ"),p.getxCord() * Tile_Size, (p.getyCord() +1)* Tile_Size, Tile_Size, Tile_Size,null);
@@ -608,14 +608,14 @@ public class PannelloDigioco extends JPanel implements Observer {
                             case 4 -> g.drawImage(immagini.get("Player_Up_ATK_JZ"),p.getxCord() * Tile_Size, (p.getyCord() +1)* Tile_Size, Tile_Size, Tile_Size,null);
                         }
                     }
-                    case Facing.NONE ->{
+                    case Direzione.NESSUNA ->{
                         g.drawImage(immagini.get("Player_Up_JZ"),p.getxCord() * Tile_Size, (p.getyCord() +1)* Tile_Size, Tile_Size, Tile_Size,null);
                     }
 
                 }}
                 case 1->{switch(p.getDirezione()){
-                    case Facing.DOWN -> {
-                        switch (p.getMove()){
+                    case Direzione.GIU -> {
+                        switch (p.getMossa()){
                             case 0 -> g.drawImage(immagini.get("Player_1_Front_JZ"),p.getxCord() * Tile_Size, (p.getyCord() +1)* Tile_Size, Tile_Size, Tile_Size,null);
                             case 1 -> g.drawImage(immagini.get("Player_1_Front_Move_Alpha_JZ"),p.getxCord() * Tile_Size, (p.getyCord() +1)* Tile_Size, Tile_Size, Tile_Size,null);
                             case 2 -> g.drawImage(immagini.get("Player_1_Front_Move_Beta_JZ"),p.getxCord() * Tile_Size, (p.getyCord() +1)* Tile_Size, Tile_Size, Tile_Size,null);
@@ -623,8 +623,8 @@ public class PannelloDigioco extends JPanel implements Observer {
                             case 4 -> g.drawImage(immagini.get("Player_1_Front_Atk_JZ"),p.getxCord() * Tile_Size, (p.getyCord() +1)* Tile_Size, Tile_Size, Tile_Size,null);
                         }
                     }
-                    case Facing.LEFT -> {
-                        switch (p.getMove()){
+                    case Direzione.SINISTRA -> {
+                        switch (p.getMossa()){
                             case 0 -> g.drawImage(immagini.get("Player_1_Left_JZ"),p.getxCord() * Tile_Size, (p.getyCord() +1)* Tile_Size, Tile_Size, Tile_Size,null);
                             case 1 -> g.drawImage(immagini.get("Player_1_Left_Move_Alpha_JZ"),p.getxCord() * Tile_Size, (p.getyCord() +1)* Tile_Size, Tile_Size, Tile_Size,null);
                             case 2 -> g.drawImage(immagini.get("Player_1_Left_Move_Beta_JZ"),p.getxCord() * Tile_Size, (p.getyCord() +1)* Tile_Size, Tile_Size, Tile_Size,null);
@@ -632,8 +632,8 @@ public class PannelloDigioco extends JPanel implements Observer {
                             case 4 -> g.drawImage(immagini.get("Player_1_Left_ATK_JZ"),p.getxCord() * Tile_Size, (p.getyCord() +1)* Tile_Size, Tile_Size, Tile_Size,null);
                         }
                     }
-                    case Facing.RIGHT -> {
-                        switch (p.getMove()){
+                    case Direzione.DESTRA -> {
+                        switch (p.getMossa()){
                             case 0 -> g.drawImage(immagini.get("Player_1_Right_JZ"),p.getxCord() * Tile_Size, (p.getyCord() +1)* Tile_Size, Tile_Size, Tile_Size,null);
                             case 1 -> g.drawImage(immagini.get("Player_1_Right_Move_Alpha_JZ"),p.getxCord() * Tile_Size, (p.getyCord() +1)* Tile_Size, Tile_Size, Tile_Size,null);
                             case 2 -> g.drawImage(immagini.get("Player_1_Right_Move_Beta_JZ"),p.getxCord() * Tile_Size, (p.getyCord() +1)* Tile_Size, Tile_Size, Tile_Size,null);
@@ -641,8 +641,8 @@ public class PannelloDigioco extends JPanel implements Observer {
                             case 4 -> g.drawImage(immagini.get("Player_1_Right_ATK_JZ"),p.getxCord() * Tile_Size, (p.getyCord() +1)* Tile_Size, Tile_Size, Tile_Size,null);
                         }
                     }
-                    case Facing.UP -> {
-                        switch (p.getMove()){
+                    case Direzione.SU -> {
+                        switch (p.getMossa()){
                             case 0 -> g.drawImage(immagini.get("Player_1_Up_JZ"),p.getxCord() * Tile_Size, (p.getyCord() +1)* Tile_Size, Tile_Size, Tile_Size,null);
                             case 1 -> g.drawImage(immagini.get("Player_1_Up_Move_Alpha_JZ"),p.getxCord() * Tile_Size, (p.getyCord() +1)* Tile_Size, Tile_Size, Tile_Size,null);
                             case 2 -> g.drawImage(immagini.get("Player_1_Up_Move_Beta_JZ"),p.getxCord() * Tile_Size, (p.getyCord() +1)* Tile_Size, Tile_Size, Tile_Size,null);
@@ -650,7 +650,7 @@ public class PannelloDigioco extends JPanel implements Observer {
                             case 4 -> g.drawImage(immagini.get("Player_1_Up_ATK_JZ"),p.getxCord() * Tile_Size, (p.getyCord() +1)* Tile_Size, Tile_Size, Tile_Size,null);
                         }
                     }
-                    case Facing.NONE ->{
+                    case Direzione.NESSUNA ->{
                         g.drawImage(immagini.get("Player_1_Up_JZ"),p.getxCord() * Tile_Size, (p.getyCord() +1)* Tile_Size, Tile_Size, Tile_Size,null);
                     }
 
@@ -666,12 +666,13 @@ public class PannelloDigioco extends JPanel implements Observer {
     @Override
     public void paint(Graphics g){
         super.paintComponent(g);
-        if (modello == null || modello.getCurrentLevel() == null) return;
+        if (modello == null || modello.getLivello() == null) return;
         try {
             creaTabellone(g);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
         disegnaElementiStatici(g);
         disegnaHotbar(g);
         creaInterfacciaInterazione(g);

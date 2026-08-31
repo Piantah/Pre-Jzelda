@@ -53,6 +53,7 @@ public class PannelloClassifica extends JPanel {
                 riga = reader.readLine();
             }
             reader.close();
+            //Stream per la classifica
             podio=classifica.entrySet().stream()
                     .sorted((a,b)->b.getValue().compareTo(a.getValue()))
                     .limit(5)

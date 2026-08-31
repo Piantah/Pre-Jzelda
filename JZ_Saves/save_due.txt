@@ -6,7 +6,7 @@ P_Y:5
 Xp:290
 Morti:0
 Tentativi:1
-Soldi:305
+Soldi:5
 Level_Id:9
-Item:Spada,Fucile,
+Item:Spada,Fucile,Staff,
 Hp:5

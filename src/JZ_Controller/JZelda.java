@@ -1,6 +1,6 @@
 package JZ_Controller;
 
-import JZ_Model_alpha.GameModel;
+import JZ_Model.GameModel;
 import JZ_View.View;
 
 public class JZelda {

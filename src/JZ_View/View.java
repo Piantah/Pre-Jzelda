@@ -11,14 +11,14 @@ public class View extends JFrame {
     private PannelloNome settagioNome;
     private PannelloGameOver gameOver;
     private PannelloClassifica classifica;
-    private AudioManager gameNoise;
+    private AudioManager audioSottofondo;
 
 
     public View(){
         super();
         setUndecorated(true);
         setLayout(null);
-        gameNoise=AudioManager.getInstance();
+        audioSottofondo =AudioManager.getInstance();
 
         p = new PannelloDigioco();
         pausa = new PannelloPausa();
@@ -54,7 +54,7 @@ public class View extends JFrame {
         requestFocusInWindow();
 
         apriMenuIniziale();
-        gameNoise.playLoop("/JZ_Assets/main_ost.wav");
+        audioSottofondo.playLoop("/JZ_Assets/main_ost.wav");
 
 
     }

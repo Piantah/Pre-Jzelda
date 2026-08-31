@@ -30,7 +30,7 @@ public class AudioManager {
             throw new RuntimeException(e);
         }
     }
-
+    //metodo per le canzoni in loop
     public void playLoop(String filename){
         try{
             InputStream on = getClass().getResourceAsStream(filename);
@@ -48,4 +48,5 @@ public class AudioManager {
             throw new RuntimeException(e);
         }
     }
+    // =^.^=
 }
