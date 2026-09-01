@@ -45,15 +45,13 @@ public class PannelloClassifica extends JPanel {
         String classPath = "JZ_Saves/" + "classifica" + ".txt";
         File file = new File(classPath);
         try(BufferedReader reader = new BufferedReader(new FileReader(file))) {
-            String riga = reader.readLine();
-            while (riga != null) {
+            //stream per la lettura del file della classifica (è identico a quello del model)
+            reader.lines().forEach(riga->{
                 String[] parti = riga.split(":");
-                if (classifica.containsKey(parti[0])) classifica.replace(parti[0], Integer.valueOf(parti[1]));
-                else classifica.put(parti[0], Integer.valueOf(parti[1]));
-                riga = reader.readLine();
-            }
+                classifica.put(parti[0], Integer.valueOf(parti[1]));
+            });
             reader.close();
-            //Stream per la classifica
+            //Stream per filtrare la classifica
             podio=classifica.entrySet().stream()
                     .sorted((a,b)->b.getValue().compareTo(a.getValue()))
                     .limit(5)

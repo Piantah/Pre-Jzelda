@@ -13,6 +13,7 @@ import JZ_Model.Items.*;
 
 import java.io.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 public class GameModel extends Observable {
@@ -22,7 +23,7 @@ public class GameModel extends Observable {
     private String path="";
     private int punteggio;
 
-    private Collection<Livello> livelli = new ArrayList<>();
+    private Collection<Livello> livelli;
     private Livello livelloCorrente;
     private Collection<Entita> entitaTemporanee;
     private Collection<Proiettile> proiettiliTemp;
@@ -36,10 +37,11 @@ public class GameModel extends Observable {
     }
 
     private GameModel(){
-        this.isGameOver=false;
-        this.player= Player.getInstance();
+        isGameOver=false;
+        player= Player.getInstance();
         entitaTemporanee=new ArrayList<>();
         proiettiliTemp =new ArrayList<>();
+        livelli = new ArrayList<>();
         assegnaLivelli();
         cambiaLivello(1);
     }
@@ -68,7 +70,7 @@ public class GameModel extends Observable {
                         case "Item"->{
                             for(String s:parti[1].split(",")){
                                 switch (s){
-                                    case "Spada"->aggiungiItem(new Spada(s,20));
+                                    case "Spada"->aggiungiItem(new Spada(s,20,player));
                                     case "Fucile"->aggiungiItem(new Fucile(s,20,player));
                                     case "Staffa"->aggiungiItem(new Staffa(s,player));
                                 }
@@ -91,24 +93,21 @@ public class GameModel extends Observable {
     }
 
     public void salvaClassifica() throws FileNotFoundException {
-        String classPath = "JZ_Saves/" + "classifica" + ".txt";
-        File file = new File(classPath);
+        String classificaPath = "JZ_Saves/" + "classifica" + ".txt";
+        File file = new File(classificaPath);
         HashMap<String,Integer> classifica = new HashMap<>();
 
         try(BufferedReader reader = new BufferedReader(new FileReader(file))) {
-            String riga = reader.readLine();
-            while(riga!=null){
-                String[] parti = riga.split(":");
-                if(classifica.containsKey(parti[0]))classifica.replace(parti[0], Integer.valueOf(parti[1]));
-                else classifica.put(parti[0], Integer.valueOf(parti[1]));
-                riga= reader.readLine();
-            }
-            reader.close();
+            //stream per la lettura del file della classifica
+            reader.lines().forEach(riga->{
+                        String[] parti = riga.split(":");
+                        classifica.put(parti[0], Integer.valueOf(parti[1]));
+                    });
+
+            //calcolo punteggio corrente
             calcolaPiunteggio();
-            if(classifica.containsKey(player.getNome())){
-                Integer tmp = classifica.get(player.getNome());
-                if(punteggio>tmp)classifica.replace(player.getNome(), punteggio);
-            }
+            if(classifica.containsKey(player.getNome()))
+                classifica.replace(player.getNome(), Math.max(classifica.get(player.getNome()),punteggio));
             else classifica.put(player.getNome(), punteggio);
 
             if(!classifica.isEmpty()){
@@ -140,9 +139,12 @@ public class GameModel extends Observable {
             text.add("Tentativi:"+player.getTenatativi());
             text.add("Soldi:"+player.getSoldi());
             text.add("Level_Id:"+ livelloCorrente.getId());
-            String tmp="Item:";
-            for(Item i: player.getOggetti())tmp=tmp+i.getNomeItem()+",";
-            text.add(tmp);
+
+            String oggetti = player.getOggetti().stream()
+                    .map(Item::getNomeItem)
+                    .collect(Collectors.joining(","));
+
+            text.add("Item:"+oggetti);
             text.add("Hp:"+player.getVita());
             BufferedWriter writer = new BufferedWriter(new FileWriter(file));
             for(String t:text){
@@ -375,12 +377,7 @@ public class GameModel extends Observable {
             int c= m.getPrezzoItem(nomeItem);
             Item i = m.compraItem(nomeItem, player.getSoldi());
             if(i!=null){
-                if(i instanceof Fucile){
-                    ((Fucile) i).setPropietario(player);
-                }
-                if(i instanceof Staffa){
-                    ((Staffa) i).setProprietario(player);
-                }
+                i.setPropietario(player);
                 if(i instanceof Fucile){
                     for(Item itm :player.getOggetti()){
                         if(itm instanceof Fucile){
@@ -409,29 +406,24 @@ public class GameModel extends Observable {
         }
         return false;
     }
+
     public boolean usaItem(String nomeItem){
         Item i = player.usa(nomeItem);
         if(i!=null){
+            i.usa();
             switch (i) {
                 case Spada spada -> {
-                    int x_tmp = player.getxCord();
-                    int y_tmp = player.getyCord();
-                    Direzione d = player.getDirezione();
-                    switch (d) {
-                        case SU -> y_tmp -= 1;
-                        case GIU -> y_tmp += 1;
-                        case SINISTRA -> x_tmp -= 1;
-                        case DESTRA -> x_tmp += 1;
+                    Punto puntoHelper = spada.getAttacco();
+                    if(puntoHelper!=null){
+                        Collection<Entita> tmp = new ArrayList<>(livelloCorrente.getEntita());
+                        player.setMossa(4);
+                        for (Entita e : tmp) {
+                            if (e.getxCord() == puntoHelper.x && e.getyCord() == puntoHelper.y) danneggiaEntita(e, i.getDanniArrecati());
+                        }
+                        return true;
                     }
-                    Collection<Entita> tmp = new ArrayList<>(livelloCorrente.getEntita());
-                    player.setMossa(4);
-                    for (Entita e : tmp) {
-                        if (e.getxCord() == x_tmp && e.getyCord() == y_tmp) danneggiaEntita(e, i.getDanniArrecati());
-                    }
-                    return true;
                 }
                 case Fucile fucile -> {
-                    fucile.usa();
                     if (fucile.getProiettile() != null && fucile.getProiettile().getDistanza() == fucile.getProiettile().getMxdistanza()) {
                         proiettiliTemp.add(fucile.getProiettile());
                         player.setMossa(3);
@@ -440,7 +432,6 @@ public class GameModel extends Observable {
                     return false;
                 }
                 case Staffa staffa -> {
-                    staffa.usa();
                     proiettiliTemp.addAll(staffa.getBullet());
                     player.setMossa(3);
                     return true;
@@ -518,8 +509,8 @@ public class GameModel extends Observable {
 
     private  void attaccoNemico(Nemico e){
         if(e.getDirezione()!= Direzione.NESSUNA){
+            e.attacca();
             if(e instanceof Husk){
-                e.attacca();
                 for(Entita entita : ((Husk) e).getAttacchi()){
                     //La posizione dell'attacco è lecita?
                     if(entita.getxCord()>=0 && entita.getxCord()< livelloCorrente.getAltezza()){
@@ -535,7 +526,6 @@ public class GameModel extends Observable {
 
             }
             else{
-                e.attacca();
                 proiettiliTemp.addAll(((Mago)e).getProiettili());
             }
         }

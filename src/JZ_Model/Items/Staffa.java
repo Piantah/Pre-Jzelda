@@ -9,18 +9,20 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class Staffa extends Item{
-    Entita proprietario;
-    Collection<Proiettile> proiettili;
+    private Collection<Proiettile> proiettili;
+
     public Staffa(String nomeItem, Entita proprietario) {
         super(nomeItem, 10);
         proiettili =new ArrayList<>();
-        this.proprietario =proprietario;
+        this.propietario =proprietario;
     }
 
 
     public Collection<Proiettile> getBullet() {
         return proiettili;
     }
+
+    //spara proiettili se non ci sono proiettili gia lanciati vicini
     public void usa(){
         boolean canShot=true;
         for(Proiettile b: proiettili){
@@ -29,8 +31,8 @@ public class Staffa extends Item{
             }
         }
         if(canShot){
-            proiettili.add(new ProiettileGiocatore(proprietario,10,this));
-            if(proprietario instanceof Player)((Player) proprietario).guadagnaVita(1);
+            proiettili.add(new ProiettileGiocatore(propietario,10,this));
+            if(propietario instanceof Player)((Player) propietario).guadagnaVita(1);
         }
         aggiornaProiettili();
     }
@@ -41,7 +43,4 @@ public class Staffa extends Item{
         proiettili.removeAll(tmp);
     }
 
-    public void setProprietario(Entita proprietario) {
-        this.proprietario = proprietario;
-    }
 }

@@ -5,8 +5,8 @@ import JZ_Model.Entities.Proiettili.ProiettileGiocatore;
 import JZ_Model.Entities.Entita;
 
 public class Fucile extends Item{
-    Proiettile proiettile;
-    Entita propietario;
+   private Proiettile proiettile;
+
 
 
     public Fucile(String nomeItem, int danniArrecati, Entita propietario) {
@@ -17,6 +17,8 @@ public class Fucile extends Item{
     public Proiettile getProiettile() {
         return proiettile;
     }
+
+    //viene creato Un proiettile soltanto. questo proiettile esiste finchè non raggiunge la sua distanza massima
     public void usa(){
         if(proiettile ==null){
             proiettile =new ProiettileGiocatore(propietario,5,this);
@@ -30,7 +32,4 @@ public class Fucile extends Item{
 
     }
 
-    public void setPropietario(Entita propietario) {
-        this.propietario = propietario;
-    }
 }
